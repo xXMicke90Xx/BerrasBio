@@ -1,0 +1,15 @@
+[
+  {
+    
+    "SaloonNr": 1,
+    "MaxSeats": 50,
+    "AvailableSeats": 50
+
+  },
+  {
+    
+    "SaloonNr": 2,
+    "MaxSeats": 100,
+    "AvailableSeats": 100
+  }
+]

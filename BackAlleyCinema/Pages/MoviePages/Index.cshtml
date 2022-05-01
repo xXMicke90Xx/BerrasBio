@@ -1,0 +1,161 @@
+﻿@page
+@model BackAlleyCinema.Pages.MoviePages.IndexModel
+@using BackAlleyCinema.Models;
+@{
+}
+<style>
+    tr:nth-child(even) {
+        background-color: #424242;
+        opacity: 0.5;
+    }
+
+    tr:nth-child(odd) {
+        background-color: #212121;
+        opacity: 0.5;
+    }
+</style>
+<div class="px-0 pt-5 d-flex justify-content-center align-items-center" style="height: 600px; background-repeat: no-repeat; background-size:auto 100%; background-position:center; padding: 0px; background-image: url('@Model.ChosenMovie.ImageTo64')">
+    @{
+        var currentMovie = new Dictionary<string, string>() { { "MovieUrl", @Model.ChosenMovie.TrailerUrl } };
+    }
+    <a target="_blank" asp-all-route-data="currentMovie" asp-page="/Trailers/Index">
+        <img src="~/images/play-button.jpg" style="height: 40px; width: 40px;" />
+    </a>
+
+</div>
+
+<div class="container justify-content-between  ">
+    <div class="row mx-auto">
+        <div class="col-3"></div>
+        <div class="col-6 text-center">
+            <h2 style="color: ghostwhite">Description</h2>
+            <p>@Model.ChosenMovie.Description</p>
+        </div>
+        <div class="col-3"></div>
+    </div>
+
+
+</div>
+
+<div class="text-center">
+    <h1 class="btn-close-white py-5 ">Köp Biljetter</h1>
+    
+</div>
+<hr />
+
+<div class="container ">
+    <div class="row">
+        <table class="table table-striped table-hover ">
+            <thead style="background-color: black; color: white;">
+                <tr class="text-center">
+                    <th onclick="sortTable(0)" class="col-4 fakeButton">Tid</th>
+                    <th onclick="sortTable(1)" class="col-4 fakeButton">Salong</th>
+                    <th onclick="sortTable(2)" class="col-4 fakeButton">Platser</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody" >
+              @Html.Raw(@Print());
+               
+               
+            </tbody>
+        </table>
+        
+        <div>
+        </div>
+
+    </div>
+</div>
+
+
+<style>
+    .fakeButton:hover{
+        cursor: pointer;
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+    .movieRow:hover{
+        cursor: pointer;
+        background-color: rgba(0, 0, 0, 0.2);
+        
+        
+    }
+</style>
+@{
+    string Print()
+    {
+        string s = "";
+        
+
+        @foreach (var view in @Model.schedules)
+        {
+            s += "<tr class=\"text-center movieRow\" style=\"color: white;\"><td id=\"value1\">" + @view.ViewsId + "</td><td id=\"value2\">" + @view.SaloonId + "</td><td id=\"value3\">" + @Model.Saloons[@view.SaloonId - 1].AvailableSeats + "</td></tr>";
+            
+        }
+
+        return s;
+
+    }
+}
+
+
+<script>
+function sortTable(n) {
+  var table, rows, switching, i, x, y, z, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById("tableBody");
+  switching = true;
+  //Set the sorting direction to ascending:
+  dir = "asc"; 
+  /*Make a loop that will continue until
+  no switching has been done:*/
+  while (switching) {
+    //start by saying: no switching is done:
+    switching = false;
+    rows = table.rows;
+    /*Loop through all table rows (except the
+    first, which contains table headers):*/
+    for (i = 0; i < (rows.length - 1); i++) {
+      //start by saying there should be no switching:
+      shouldSwitch = false;
+      /*Get the two elements you want to compare,
+      one from current row and one from the next:*/
+      x = rows[i].getElementsByTagName("TD")[n];
+      y = rows[i + 1].getElementsByTagName("TD")[n];
+      
+      /*check if the two rows should switch place,
+      based on the direction, asc or desc:*/
+      if (dir == "asc") {
+        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+          //if so, mark as a switch and break the loop:
+          shouldSwitch= true;
+          break;
+        }
+      } else if (dir == "desc") {
+        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+          //if so, mark as a switch and break the loop:
+          shouldSwitch = true;
+          break;
+        }
+      }
+    }
+    if (shouldSwitch) {
+      /*If a switch has been marked, make the switch
+      and mark that a switch has been done:*/
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      //Each time a switch is done, increase this count by 1:
+      switchcount ++;      
+    } else {
+      /*If no switching has been done AND the direction is "asc",
+      set the direction to "desc" and run the while loop again.*/
+      if (switchcount == 0 && dir == "asc") {
+        dir = "desc";
+        switching = true;
+      }
+    }
+  }
+}
+
+</script>
+
+
+
+

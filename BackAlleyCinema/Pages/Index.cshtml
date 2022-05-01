@@ -1,0 +1,83 @@
+﻿@page
+@using BackAlleyCinema.Models
+@using Newtonsoft.Json
+@using System.Globalization;
+@model IndexModel
+@{
+    ViewData["Title"] = "Berras Bio";
+
+    int counter = 0;
+}
+
+<div class="container-fluid px-0">
+    <div class="flex-grow-0 row px-0">
+        @{
+            Dictionary<string, string> data = new Dictionary<string, string>() { { "header", @Model.movies[0].Title } };
+        }
+        <a class="px-0 align-content-between justify-content-between text-center" asp-page="/MoviePages/Index" asp-all-route-data="data">
+            <img class="px-0" style=" position: center; height: 500px; width: 100%;" src="@Model.movies[counter].ImageTo64" @counter++; />
+        </a>
+
+    </div>
+</div>
+
+<div class="">
+    <h1 class="text-center py-4 text-white">Resent Releases</h1>
+</div>
+<div class="container py-5">
+    <div class="row justify-content-between" style="height: 400px;">
+        @for (var (i, j) = (counter, counter); i < j + 3; i++)
+        {
+            Dictionary<string, string> data2 = new Dictionary<string, string>() { { "header", @Model.movies[i].Title } };
+            <div class="col-3 my-4 px-0 mx-0 border-0 rounded-3" style="max-height: 400px;">
+                <a class="px-0" asp-page="/MoviePages/Index" asp-all-route-data="data2">
+                    <img style="max-height: 400px; width: auto; " src="@Model.movies[i].Poster" />
+                    <h4 style="z-index: 1; position:absolute; bottom: 5px; color: white;">@Model.movies[i].Title.ToString()</h4>
+                </a>
+
+            </div>
+
+            counter++;
+        }
+    </div>
+</div>
+
+<div class="">
+    <h1 class="text-center py-4 text-white">All Releases</h1>
+</div>
+<div class="container py-5">
+    <div class="row justify-content-between" style="height: 300px;">
+        @for (var (i, j) = (counter, counter); i < j + 5; i++)
+        {
+            Dictionary<string, string> data2 = new Dictionary<string, string>() { { "header", @Model.movies[i].Title } };
+
+            <div class="col-2 my-4 px-0 mx-0 border-0 rounded-3" style="max-height: 300px;">
+                <a class="px-0" asp-page="/MoviePages/Index" asp-all-route-data="data2">
+                    <img style="max-height: 300px; width:auto; border-radius: 5px; " src="@Model.movies[i].Poster" />
+                    <h4 style="z-index: 1; position:absolute; bottom: 5px; color: white;">@Model.movies[i].Title</h4>
+                </a>
+            </div>
+
+            counter++;
+        }
+
+    </div>
+</div>
+<div class="">
+    <h1 class="text-center py-4 text-white">Coming Soon</h1>
+</div>
+<div class="container py-5">
+    <div class="row justify-content-between" style="height: 300px;">
+        @for (int i = counter; i < Model.movies.Count(); i++)
+        {
+            Dictionary<string, string> data2 = new Dictionary<string, string>() { { "header", @Model.movies[i].Title } };
+             <div class="col-2 my-4 px-0 mx-0 border-0 rounded-3" style="max-height: 300px;">
+                <a class="px-0" asp-page="/MoviePages/Index" asp-all-route-data="data2">
+                    <img style="max-height: 300px; width:auto; border-radius: 5px; " src="@Model.movies[i].Poster" />
+                    <h4 style="z-index: 1; position:absolute; bottom: 5px; color: white;">@Model.movies[i].Title</h4>
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
