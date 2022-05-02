@@ -12,9 +12,9 @@ namespace BackAlleyCinema.Pages.MoviePages
         public int MenuChoice { get; set; } = 0;
         public List<Schedule> schedules { get; set; }
         public List<Saloon> Saloons { get; set; }
-        string t = "test";
+       
         public Movie ChosenMovie { get; set; }
-
+        public Dictionary<string, string> Data { get; set; } = new Dictionary<string, string>() { { "Hello", "Mike"}};
         public IndexModel(CinemaDbContext context)
         {
             _context = context;
@@ -28,11 +28,12 @@ namespace BackAlleyCinema.Pages.MoviePages
             ChosenMovie = _context.Movies.Where(x => x.Title == title.Values.First()).First();
             schedules = _context.Schedules.Where(x => x.MovieId == ChosenMovie.Id).ToList();
             Saloons = _context.Saloons.ToList();
-        }
-        public IActionResult MyTest()
+        }      
+
+        public IActionResult OnPost(Dictionary<string, string> data)
         {
 
-            return RedirectToPage("/Cinema", t);
+            return RedirectToPage("../Cinema/Index");
         }
        
     }
