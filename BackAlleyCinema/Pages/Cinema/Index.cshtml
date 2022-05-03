@@ -1,71 +1,101 @@
 ﻿@page
 @model BackAlleyCinema.Pages.Cinema.IndexModel
+
 @{
     int totalseats = @Model.ChosenSaloon.MaxSeats;
-    int chosenAmount = 2;    
+    int chosenAmount = 2;
 }
+<asp:ScriptManager ID="ScriptManager1"
+                   EnablePageMethods="true"
+                   EnablePartialRendering="true" runat="server" />
 <style>
     .yellowSeat {
-
         width: 60px;
         height: 60px;
-        
         background-color: yellow;
         border-bottom-left-radius: 15px;
         border-bottom-right-radius: 15px;
     }
-    
 </style>
 
+@{
+    Dictionary<string, string> data = new Dictionary<string, string>() { { "Movie", @Model.ChosenMovie.Id.ToString() }, { "Saloon", @Model.ChosenSaloon.SaloonNr.ToString() }, { "Time", @Model.ThisSchedule.ViewsId.ToString() }, { "Price", @Model.Price.ToString() } };
+}
+<form method="post" id="formId">
+    <div class="container-fluid">
+        <div class="row pt-5">
+            <div class="col-2 text-center">
+                <button type="button" value="200" onclick="changePriceBackend(-1); SeatsButtons(-1); " style="display: inline-block; height: 60px; width: 60px;"><img style="width: auto; height: 40px;" src="~/images/Minus2.jpg" /></button>
+                <h1 id="Seats" class="pt-5 px-2" style="display: inline-block; color:white;">2</h1>
+                <button type="button" onclick="changePriceBackend(1); SeatsButtons(1); " style="display: inline-block; height: 60px; width: 60px;"><img style="width: auto; height: 40px;" src="~/images/Plus.jpg" /></button>
+            </div>
+            <div class="col-8 img-fluid">
+                <img style="width: 100%; max-height: 400px;" src="/images/CinemaScreen.jpg" />
+            </div>
+            <div class="col-2 pt-5 ">
+                <img class="float-start" style="max-width: 60px; height: auto;" src="@Model.ChosenMovie.Poster">
+                <p class="">@Model.ChosenMovie.Description</p>
+                <br />
+                <h2 style="display:inline-block;">Total: </h2>
+                <h2 id="Total" style="display: inline-block; padding-left: 20px;">200</h2>
+            </div>
 
-<div class="container-fluid">
-    <div class="row pt-5">
-        <div class="col-2 text-center">
-            <button type="button" onclick="SeatsButtons(-1)" style="display: inline-block; height: 60px; width: 60px;"><img style="width: auto; height: 40px;" src="~/images/Minus2.jpg" /></button>
-            <h1 id="Seats" class="pt-5 px-2" style="display: inline-block; color:white;">2</h1>
-            <button type="button" onclick="SeatsButtons(1)" style="display: inline-block; height: 60px; width: 60px;"><img style="width: auto; height: 40px;" src="~/images/Plus.jpg" /></button>
         </div>
-        <div class="col-8 img-fluid">
-            <img style="width: 100%; max-height: 400px;" src="/images/CinemaScreen.jpg" />
-        </div>
-        <div class="col-2 pt-5 ">
-            <img class="float-start" style="max-width: 60px; height: auto;" src="@Model.ChosenMovie.Poster">
-            <p class="">@Model.ChosenMovie.Description</p>
+    </div>
+
+    <div id="SeatClass" class="container pt-5 align-items-flex-end">
+        <div class="col-12 text-center" style="min-width: 700px; border: 1px solid white">
             <br />
-            <h2 style="display:inline-block;">Total: </h2>
-            <h2 id="Total" style="display: inline-block; padding-left: 20px;">200</h2>
+            @for (int i = 0; i < totalseats; i++)
+            {
+
+                if (totalseats == 50 ? i == 10 || i == 20 || i == 30 || i == 40 : i == 20 || i == 40 || i == 60 || i == 80)
+                {
+                    <br />
+                    <br />
+                    <button type="submit" onlick="" id="@i" class="yellowSeat" onmouseover="MouseOverButton(@i)" onmouseout="MouseOutButton(@i)"></button>
+                }
+                else
+                {
+                    <button type="submit" onlick="" id="@i" class="yellowSeat" onmouseover="MouseOverButton(@i)" onmouseout="MouseOutButton(@i)"></button>
+                }
+            }
         </div>
 
     </div>
-</div>
-
-<div id = "SeatClass" class="container pt-5 align-items-flex-end" >
-    <div class="col-12 text-center" style="min-width: 700px; border: 1px solid white">
-        <br />
-        @for (int i = 0; i < totalseats; i++)
-        {
-
-            if (totalseats == 50 ? i == 10 || i == 20 || i == 30 || i == 40 : i == 20 || i == 40 || i == 60 || i == 80)
-            {
-                <br />
-                <br />
-                <a type="submit" asp-page="/Payment/Index" id="@i" class="yellowSeat" onmouseover="MouseOverButton(@i)" onmouseout="MouseOutButton(@i)"></a>
-            }
-            else
-            {
-                <a type="submit" asp-page="/Payment/Index" id="@i" class="yellowSeat" onmouseover="MouseOverButton(@i)" onmouseout="MouseOutButton(@i)"></a>
-            }
-        }
-    </div>
-
-</div>
+    <input hidden type="number" value="200" asp-for="@Model.Price" id="price" />
+    <input hidden type="number" value="@Model.ChosenMovie.Id" asp-for="@Model.MovieId" id="MovieId" />
+    <input hidden type="number" value="@Model.ChosenSaloon.SaloonNr" asp-for="@Model.SaloonNr" id="SaloonNr" />
+    <input hidden type="text" value="@Model.ThisSchedule.ViewsId" asp-for="@Model.ViewsId" id="ViewsId" />
+    <input hidden type="number" asp-for="@Model.Seat" id="firstSeat" />
+</form>
 
 
 <script>
     document.getElementById("SeatClass").onload = LoadSettings();
+    
+
+
+
+    function changePriceBackend(t){
+        
+        var input = document.getElementById("price");
+        const value = parseInt(document.getElementById("Seats").innerText);
+        alert(value);
+        if (value > 1 && value < 12 || value === 1 && t > 0 || value === 12 && t < 1){
+        if (t > 0){
+            input.value = parseInt(input.value) + parseInt(100)
+        }
+        else{
+            input.value -= parseInt(100)
+        }
+        }
+
+    }
+
 
     function LoadSettings(){
-       
+
         if(@totalseats > 50){
             document.getElementById("SeatClass").style.minWidth = "1400px";
         }
@@ -74,13 +104,12 @@
 
     function SeatsButtons(v){
         const value = parseInt(document.getElementById("Seats").innerText);
-       
 
         if (value > 1 && value < 12 || value === 1 && v > 0 || value === 12 && v < 1){
         document.getElementById("Seats").innerText = value + v;
         document.getElementById("Total").innerText = (value + v) * 100;
+        document.getElementById("price").attributes.value += 100;
         }
-
     }
 
     function MouseOverButton(id){
@@ -89,6 +118,7 @@
         for(let i = 0; i < seats; i++){
             document.getElementById(id+i).style.opacity = 0.5;
         }
+        document.getElementById("firstSeat").value=parseInt(id);
     }
     function MouseOutButton(id){
         const selectedSeats = document.getElementsByClassName("seatButtons");

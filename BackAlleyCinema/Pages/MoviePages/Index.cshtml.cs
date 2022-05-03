@@ -12,9 +12,10 @@ namespace BackAlleyCinema.Pages.MoviePages
         public int MenuChoice { get; set; } = 0;
         public List<Schedule> schedules { get; set; }
         public List<Saloon> Saloons { get; set; }
-       
+
+        
         public Movie ChosenMovie { get; set; }
-        public Dictionary<string, string> Data { get; set; } = new Dictionary<string, string>() { { "Hello", "Mike"}};
+        
         public IndexModel(CinemaDbContext context)
         {
             _context = context;
@@ -30,7 +31,7 @@ namespace BackAlleyCinema.Pages.MoviePages
             Saloons = _context.Saloons.ToList();
         }      
 
-        public IActionResult OnPost(Dictionary<string, string> data)
+        public IActionResult OnPost()
         {
 
             return RedirectToPage("../Cinema/Index");
