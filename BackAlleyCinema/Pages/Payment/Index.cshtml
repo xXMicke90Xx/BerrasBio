@@ -15,6 +15,20 @@
 <div class="text-center">
     <form method="post">
         
+        <label asp-for="@Model.Ticket.EMail">EMail</label>
+        <input type="text" asp-for="@Model.Ticket.EMail" />
+        <span asp-validation-for="@Model.Ticket.EMail" class="text-danger"></span>
+        <label asp-for="@Model.Ticket.PhoneNumber">PhoneNumber</label>
+        <input type="text" asp-for="@Model.Ticket.PhoneNumber" />
+        <span asp-validation-for="@Model.Ticket.PhoneNumber" class="text-danger"></span>
+        <input hidden type="number" asp-for="@Model.Ticket.SaloonNr" value="@Model.ChosenSaloon.SaloonNr" />
+        <input hidden type="datetime" asp-for="@Model.Ticket.MovieStart" value="@Model.ThisSchedule.ViewsId" />
+        <input hidden type="text" asp-for="@Model.Ticket.MovieTitle" value="@Model.ChosenMovie.Title" />
+
+
+
+
+
         <input type="checkbox" />
 
         <button class="btn btn-primary" type="submit">Jag har INTE varit en dålig människa</button>

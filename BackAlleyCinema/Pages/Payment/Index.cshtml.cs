@@ -10,13 +10,14 @@ namespace BackAlleyCinema.Pages.Payment
     public class IndexModel : PageModel
     {
         public Saloon ChosenSaloon { get; set; }
-
         public int Price { get; set; }
         public Movie ChosenMovie { get; set; }
         public int FirstSeat { get; set; }
         public Schedule ThisSchedule { get; set; }
         private CinemaDbContext _context { get; }
+        public Ticket Ticket { get; set; } = new Ticket();
 
+        
         public void OnGet(Dictionary<string, string> data)
         {
             Price = int.Parse(data["Price"]);
@@ -27,7 +28,7 @@ namespace BackAlleyCinema.Pages.Payment
                 x.MovieId == ChosenMovie.Id &&
                 x.ViewsId == DateTime.Parse(data["Time"])).FirstOrDefault();
             FirstSeat = int.Parse(data["FirstSeat"]);
-
+            Ticket = new Ticket();
 
         }
 
@@ -36,40 +37,68 @@ namespace BackAlleyCinema.Pages.Payment
             _context = context;
         }
 
-        public void OnPost(Dictionary<string, string> data)
+        public IActionResult OnPost()
         {
-
-
-
-
-
-
-
-
-
-            using (var smtp = new SmtpClient("smtp-mail.outlook.com"))
+            try
             {
-
-                smtp.Port = 587;
-                smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
-                smtp.UseDefaultCredentials = false;
-                smtp.EnableSsl = true;
-                smtp.Credentials = new System.Net.NetworkCredential("Micke.Handledning@hotmail.com", "M1ke1sthebest2", "smtp-mail.outlook.com");
-
-
-                var msg = new MailMessage
+                List<Ticket> tickets = new List<Ticket>();
+                string seatsTaken = "";
+                for (int i = FirstSeat; i < Price / 100 + FirstSeat; i++)
                 {
-                    Body = "Hellooooo Sexy Girl mmmm yeeeeaaaahhhh",
-                    Subject = "Test",
-                    From = new MailAddress("Micke.Handledning@hotmail.com"),
+                    tickets.Add(new Ticket
+                    {
+                        EMail = Ticket.EMail,
+                        MovieStart = Ticket.MovieStart,
+                        PurchasedTime = DateTime.Now,
+                        PhoneNumber = Ticket.PhoneNumber,
+                        SaloonNr = Ticket.SaloonNr,
+                        MovieTitle = Ticket.MovieTitle,
+                        Seat = i,
+                    });
+                    seatsTaken += i.ToString() + ",";
+                }
 
-                };
-                msg.To.Add("Micke.n90@hotmail.com");
-                smtp.SendMailAsync(msg);
+                ThisSchedule = _context.Schedules
+                    .Where(x => x.Saloons.SaloonNr == tickets[0].SaloonNr &&
+                    x.Movies.Title == tickets[0].MovieTitle &&
+                    x.ViewsId == tickets[0].MovieStart).FirstOrDefault();
+                ThisSchedule.TakenSeats += seatsTaken;
+                ThisSchedule.TicketsSold += tickets.Count();
+                _context.Tickets.AddRange(tickets);
+                _context.Schedules.Update(ThisSchedule);
+                _context.SaveChanges();
+
+                return RedirectToPage("../EndPage/Index");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Något gick fel, testa att ladda om sidan igen eller starta om från index igen!", ex);
+            }
+           
+
+            //using (var smtp = new SmtpClient("smtp-mail.outlook.com"))
+            //{
+
+            //    smtp.Port = 587;
+            //    smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+            //    smtp.UseDefaultCredentials = false;
+            //    smtp.EnableSsl = true;
+            //    smtp.Credentials = new System.Net.NetworkCredential("Micke.Handledning@hotmail.com", "M1ke1sthebest2", "smtp-mail.outlook.com");
+
+
+            //    var msg = new MailMessage
+            //    {
+            //        Body = "Hellooooo Sexy Girl mmmm yeeeeaaaahhhh",
+            //        Subject = "Test",
+            //        From = new MailAddress("Micke.Handledning@hotmail.com"),
+
+            //    };
+            //    msg.To.Add("Micke.n90@hotmail.com");
+            //    smtp.SendMailAsync(msg);
                 
 
 
-            }
+            //}
         }
     }
 }

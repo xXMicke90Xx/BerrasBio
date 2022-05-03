@@ -4,6 +4,7 @@ using BackAlleyCinema.DataBaseAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BackAlleyCinema.Migrations
 {
     [DbContext(typeof(CinemaDbContext))]
-    partial class CinemaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220503121821_ticket")]
+    partial class ticket
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -117,12 +119,11 @@ namespace BackAlleyCinema.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("MovieId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("MovieStart")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("MovieTitle")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
@@ -134,10 +135,9 @@ namespace BackAlleyCinema.Migrations
                     b.Property<int>("SaloonNr")
                         .HasColumnType("int");
 
-                    b.Property<int>("Seat")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("MovieId");
 
                     b.ToTable("Tickets");
                 });
@@ -159,6 +159,17 @@ namespace BackAlleyCinema.Migrations
                     b.Navigation("Movies");
 
                     b.Navigation("Saloons");
+                });
+
+            modelBuilder.Entity("BackAlleyCinema.Models.Ticket", b =>
+                {
+                    b.HasOne("BackAlleyCinema.Models.Movie", "Movie")
+                        .WithMany()
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Movie");
                 });
 
             modelBuilder.Entity("BackAlleyCinema.Models.Movie", b =>

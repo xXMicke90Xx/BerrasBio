@@ -16,10 +16,17 @@
         border-bottom-left-radius: 15px;
         border-bottom-right-radius: 15px;
     }
+    .redSeat{
+        width: 60px;
+        height: 60px;
+        background-color: red;
+        border-bottom-left-radius: 15px;
+        border-bottom-right-radius: 15px;
+    }
 </style>
 
 @{
-    
+
 }
 <form method="post" id="formId">
     <div class="container-fluid">
@@ -53,35 +60,50 @@
                 {
                     <br />
                     <br />
-                    <button type="submit" onlick="" id="@i" class="yellowSeat" onmouseover="MouseOverButton(@i)" onmouseout="MouseOutButton(@i)"></button>
+                    if (@Model.OccupiedSeats.Contains(i.ToString()))
+                    {
+                        <button type="submit" onlick="" id="@i" class="redSeat" onmouseover="MouseOverButton(@i)" onmouseout="MouseOutButton(@i)"></button>
+                    }
+                    else
+                    {
+                        <button type="submit" onlick="" id="@i" class="yellowSeat" onmouseover="MouseOverButton(@i)" onmouseout="MouseOutButton(@i)"></button>
+                    }
                 }
                 else
                 {
-                    <button type="submit" onlick="" id="@i" class="yellowSeat" onmouseover="MouseOverButton(@i)" onmouseout="MouseOutButton(@i)"></button>
+                    if (@Model.OccupiedSeats.Contains(i.ToString()))
+                    {
+                        <button type="submit" onlick="" id="@i" class="redSeat" onmouseover="MouseOverButton(@i)" onmouseout="MouseOutButton(@i)"></button>
+                    }
+                    else
+                    {
+                        <button type="submit" onlick="" id="@i" class="yellowSeat" onmouseover="MouseOverButton(@i)" onmouseout="MouseOutButton(@i)"></button>
+                    }
                 }
             }
         </div>
 
     </div>
-    <input  type="number" value="200" asp-for="@Model.Price" id="price" />
-    <input  type="number" value="@Model.ChosenMovie.Id" asp-for="@Model.MovieId" id="MovieId" />
-    <input  type="number" value="@Model.ChosenSaloon.Id" asp-for="@Model.SaloonId" id="SaloonId" />
-    <input  type="text" value="@Model.ThisSchedule.ViewsId" asp-for="@Model.ViewsId" id="ViewsId" />
-    <input n type="number" asp-for="@Model.Seat" id="firstSeat" />
+    <input type="number" value="200" asp-for="@Model.Price" id="price" />
+    <input type="number" value="@Model.ChosenMovie.Id" asp-for="@Model.MovieId" id="MovieId" />
+    <input type="number" value="@Model.ChosenSaloon.Id" asp-for="@Model.SaloonId" id="SaloonId" />
+    <input type="text" value="@Model.ThisSchedule.ViewsId" asp-for="@Model.ViewsId" id="ViewsId" />
+    <input type="text" value="@Model.ThisSchedule.TakenSeats" asp-for="@Model.OccupiedSeats" id="ViewsId" />
+    <input type="number" asp-for="@Model.Seat" id="firstSeat" />
 </form>
 
 
 <script>
     document.getElementById("SeatClass").onload = LoadSettings();
-    
+
 
 
 
     function changePriceBackend(t){
-        
+
         var input = document.getElementById("price");
         const value = parseInt(document.getElementById("Seats").innerText);
-        alert(value);
+
         if (value > 1 && value < 12 || value === 1 && t > 0 || value === 12 && t < 1){
         if (t > 0){
             input.value = parseInt(input.value) + parseInt(100)
@@ -119,7 +141,7 @@
         for(let i = 0; i < seats; i++){
             document.getElementById(id+i).style.opacity = 0.5;
         }
-        
+
     }
     function MouseOutButton(id){
         const selectedSeats = document.getElementsByClassName("seatButtons");
