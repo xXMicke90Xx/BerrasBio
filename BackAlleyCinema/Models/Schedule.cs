@@ -15,8 +15,9 @@ namespace BackAlleyCinema.Models
 
         public int TicketsSold { get; set; }
 
-        public string TakenSeats { get; set; }
+        public string TakenSeats { get; set; } = "";
 
-
+        public int TicketsId { get; set; }
+        public List<Ticket>? Tickets { get; set; }
     }
 }

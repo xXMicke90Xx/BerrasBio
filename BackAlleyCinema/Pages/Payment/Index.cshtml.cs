@@ -1,5 +1,6 @@
 using BackAlleyCinema.DataBaseAccess;
 using BackAlleyCinema.Models;
+using BackAlleyCinema.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Mail;
@@ -9,26 +10,34 @@ namespace BackAlleyCinema.Pages.Payment
     [BindProperties(SupportsGet = true)]
     public class IndexModel : PageModel
     {
-        public Saloon ChosenSaloon { get; set; }
-        public int Price { get; set; }
-        public Movie ChosenMovie { get; set; }
+        
+        public int Price { get; set; }       
         public int FirstSeat { get; set; }
-        public Schedule ThisSchedule { get; set; }
+
+        public string MovieTitle { get; set; }
+        public int SaloonNr { get; set; }
+        public DateTime ViewStart { get; set; }
+
         private CinemaDbContext _context { get; }
-        public Ticket Ticket { get; set; } = new Ticket();
+        [ModelBinder]
+        public Ticket Ticket { get; set; }
 
         
         public void OnGet(Dictionary<string, string> data)
         {
             Price = int.Parse(data["Price"]);
-            ChosenMovie = _context.Movies.Where(x => x.Id == int.Parse(data["Movie"])).FirstOrDefault();
-            ChosenSaloon = _context.Saloons.Where(x => x.Id == int.Parse(data["Saloon"])).FirstOrDefault();
-            ThisSchedule = _context.Schedules
-                .Where(x => x.Saloons.Id == ChosenSaloon.Id &&
-                x.MovieId == ChosenMovie.Id &&
+            var chosenMovie = _context.Movies.Where(x => x.Id == int.Parse(data["Movie"])).FirstOrDefault();           
+            var chosenSaloon = _context.Saloons.Where(x => x.Id == int.Parse(data["Saloon"])).FirstOrDefault();
+            var thisSchedule = _context.Schedules
+                .Where(x => x.Saloons.Id == chosenSaloon.Id &&
+                x.MovieId == chosenMovie.Id &&
                 x.ViewsId == DateTime.Parse(data["Time"])).FirstOrDefault();
             FirstSeat = int.Parse(data["FirstSeat"]);
-            Ticket = new Ticket();
+            
+
+            MovieTitle = chosenMovie.Title.ToString();
+            SaloonNr = chosenSaloon.SaloonNr;
+            ViewStart = thisSchedule.ViewsId;
 
         }
 
@@ -37,13 +46,12 @@ namespace BackAlleyCinema.Pages.Payment
             _context = context;
         }
 
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPost(Ticket ticket)
         {
-            try
-            {
+            
                 List<Ticket> tickets = new List<Ticket>();
                 string seatsTaken = "";
-                for (int i = FirstSeat; i < Price / 100 + FirstSeat; i++)
+                for (int i = FirstSeat; i < Price / 100 + FirstSeat; i++)  //Skapar biljetter för tittarna
                 {
                     tickets.Add(new Ticket
                     {
@@ -53,52 +61,48 @@ namespace BackAlleyCinema.Pages.Payment
                         PhoneNumber = Ticket.PhoneNumber,
                         SaloonNr = Ticket.SaloonNr,
                         MovieTitle = Ticket.MovieTitle,
-                        Seat = i,
+                        Seat = (i+1),
+                        
+
                     });
                     seatsTaken += i.ToString() + ",";
                 }
 
-                ThisSchedule = _context.Schedules
-                    .Where(x => x.Saloons.SaloonNr == tickets[0].SaloonNr &&
-                    x.Movies.Title == tickets[0].MovieTitle &&
-                    x.ViewsId == tickets[0].MovieStart).FirstOrDefault();
-                ThisSchedule.TakenSeats += seatsTaken;
-                ThisSchedule.TicketsSold += tickets.Count();
-                _context.Tickets.AddRange(tickets);
-                _context.Schedules.Update(ThisSchedule);
-                _context.SaveChanges();
+            var thisSchedule = _context.Schedules
+                .Where(x => x.Saloons.SaloonNr == tickets[0].SaloonNr &&
+                x.Movies.Title == tickets[0].MovieTitle &&
+                x.ViewsId == tickets[0].MovieStart).FirstOrDefault();
 
-                return RedirectToPage("../EndPage/Index");
-            }
-            catch (Exception ex)
+
+            ModelState.Remove("MovieTitle");
+
+            if (ModelState.IsValid == true)
             {
-                throw new Exception("Något gick fel, testa att ladda om sidan igen eller starta om från index igen!", ex);
+                await MailService.MailSender(Ticket.EMail, Ticket.MovieTitle, seatsTaken, Ticket.SaloonNr, Ticket.MovieStart.ToString());
+
+
+
+                thisSchedule.TakenSeats += seatsTaken;
+                thisSchedule.TicketsSold += tickets.Count();
+
+                await _context.Tickets.AddRangeAsync(tickets);
+                _context.Schedules.Update(thisSchedule);
+                await _context.SaveChangesAsync();
+              
+
+                return RedirectToPage("../EndPage/Index", new { id = thisSchedule.MovieId });
             }
-           
-
-            //using (var smtp = new SmtpClient("smtp-mail.outlook.com"))
-            //{
-
-            //    smtp.Port = 587;
-            //    smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
-            //    smtp.UseDefaultCredentials = false;
-            //    smtp.EnableSsl = true;
-            //    smtp.Credentials = new System.Net.NetworkCredential("Micke.Handledning@hotmail.com", "M1ke1sthebest2", "smtp-mail.outlook.com");
-
-
-            //    var msg = new MailMessage
-            //    {
-            //        Body = "Hellooooo Sexy Girl mmmm yeeeeaaaahhhh",
-            //        Subject = "Test",
-            //        From = new MailAddress("Micke.Handledning@hotmail.com"),
-
-            //    };
-            //    msg.To.Add("Micke.n90@hotmail.com");
-            //    smtp.SendMailAsync(msg);
+            else
+            {
                 
+                return RedirectToPage("../Payment/Index", new Dictionary<string, string> { { "Movie", thisSchedule.MovieId.ToString() }, { "Saloon", thisSchedule.SaloonId.ToString() }, { "Time", thisSchedule.ViewsId.ToString() }, { "Price", Price.ToString() }, { "FirstSeat", FirstSeat.ToString() } });
 
 
-            //}
+            }
+
+
+            
+            
         }
     }
 }

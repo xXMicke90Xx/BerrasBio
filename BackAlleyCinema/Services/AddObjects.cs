@@ -16,7 +16,11 @@ namespace BackAlleyCinema.Services
             _context = context;
         }
 
-
+        /// <summary>
+        /// Knyter Samman borden med film, salong och när den ska visas
+        /// </summary>
+        /// <param name="saloonId"></param>
+        /// <returns></returns>
         private List<Schedule> JoinTablesWithShowTimes(int saloonId)
         {
             Random random = new Random();
@@ -46,8 +50,11 @@ namespace BackAlleyCinema.Services
             return ShowTimes;
         }
 
-
-        public void FillDataBaseWithMovies()
+        /// <summary>
+        /// Fyller databasen med data
+        /// </summary>
+        /// <returns></returns>
+        public async Task FillDataBaseWithMovies()
         {
             
             serializerSettings.Culture = new CultureInfo("sv-SE");
@@ -69,12 +76,12 @@ namespace BackAlleyCinema.Services
             
             
 
-            _context.Movies.AddRange(movies);
-            _context.SaveChanges();
-            _context.Saloons.AddRange(saloon);
-            _context.SaveChanges();
-            _context.Schedules.AddRange(ShowTimes);
-            _context.SaveChanges();
+            await _context.Movies.AddRangeAsync(movies);
+            await _context.SaveChangesAsync();
+            await _context.Saloons.AddRangeAsync(saloon);
+            await _context.SaveChangesAsync();
+            await _context.Schedules.AddRangeAsync(ShowTimes);
+            await _context.SaveChangesAsync();
 
         }
 

@@ -1,9 +1,9 @@
-﻿using BackAlleyCinema.Interfaces;
+﻿
 using System.ComponentModel.DataAnnotations;
 
 namespace BackAlleyCinema.Models
 {
-    public class Movie : IMovie
+    public class Movie
     {
 
 

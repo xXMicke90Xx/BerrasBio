@@ -14,9 +14,10 @@ namespace BackAlleyCinema.Pages.Cinema
         public Movie ChosenMovie { get; set; }
         public Schedule ThisSchedule { get; set; }
         private CinemaDbContext _context { get; }
+        
         public int Seat { get; set; }
         public int Price { get; set; }
-        public int MovieId { get; set; }
+        public string MovieId { get; set; }
         public int SaloonId { get; set; }
         public string ViewsId { get; set; }
 
@@ -30,7 +31,7 @@ namespace BackAlleyCinema.Pages.Cinema
                 .Where(x => x.Saloons.Id == ChosenSaloon.Id &&
                 x.MovieId == ChosenMovie.Id &&
                 x.ViewsId == DateTime.Parse(data["Time"])).FirstOrDefault();
-
+            
 
             OccupiedSeats = ThisSchedule.TakenSeats.Split(",");
 
@@ -41,6 +42,7 @@ namespace BackAlleyCinema.Pages.Cinema
         public IndexModel(CinemaDbContext context)
         {
             _context = context;
+            
         }
         public IActionResult OnPost()
         {
@@ -56,14 +58,14 @@ namespace BackAlleyCinema.Pages.Cinema
             }
 
 
-            if (temp.Contains(Seat.ToString()))
+            if (temp.Contains(Seat.ToString())) // Retunerar samma sida igen on första sätet är uppdaget
             {
                 return RedirectToPage("/Cinema/Index", new Dictionary<string, string> { { "Movie", MovieId.ToString() }, { "Saloon", SaloonId.ToString() }, { "Time", ViewsId.ToString() }, { "Price", Price.ToString() }, { "FirstSeat", Seat.ToString() } });
             }
 
             var saloon = _context.Saloons.Where(x => x.Id == SaloonId).FirstOrDefault();
 
-            for (int i = Seat; i < (Price / 100) + Seat; i++)
+            for (int i = Seat; i < (Price / 100) + Seat; i++) // Retunerar samma sida igen om något av dom valda sätena är upptagna
             {
                 if (i > saloon.MaxSeats - 1 || temp.Contains(i.ToString()))
                 {
@@ -71,7 +73,8 @@ namespace BackAlleyCinema.Pages.Cinema
                 }
 
             }
-
+            
+            //Allt gick bra
             return RedirectToPage("../Payment/Index", new Dictionary<string, string> { { "Movie", MovieId.ToString() }, { "Saloon", SaloonId.ToString() }, { "Time", ViewsId.ToString() }, { "Price", Price.ToString() }, { "FirstSeat", Seat.ToString() } });
 
         }

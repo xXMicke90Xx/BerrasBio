@@ -19,9 +19,10 @@ namespace BackAlleyCinema.Pages
             _logger = logger;
         }
 
-        public void OnGet()
+        public void OnGet(ErrorEventArgs ex)
         {
             RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
+
         }
     }
 }

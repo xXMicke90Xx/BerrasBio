@@ -1,38 +1,76 @@
 ﻿@page
 @model BackAlleyCinema.Pages.Payment.IndexModel
+
 @{
 }
 <div class="text-center">
     <h1>Skicka en Swish!</h1>
 </div>
 
-<div class ="text-center">
-    <p>Tjena, du har nu beställt biljetter! Dom kommer dock inte registreras ifall en swish inte skickas till 0737483075. Nu har jag ingen möjlighet till att kontrollera detta så jag litar på att du inte är en DÅLIG MÄNNISKA som skulle ignorera att betala!
+<div class="text-center">
+    <p style="color: white;">
+        Tjena, du kommer nu att beställa biljetter! Dom kommer dock inte registreras ifall en swish inte skickas till 0737483075. Nu har jag ingen möjlighet till att kontrollera detta så jag litar på att du inte är en DÅLIG MÄNNISKA som skulle ignorera att betala!
         Du kan ju checka boxen och klicka på knappen när du har swishat så tar jag ditt ord för det!
     </p>
+
 </div>
 
 <div class="text-center">
     <form method="post">
-        
-        <label asp-for="@Model.Ticket.EMail">EMail</label>
-        <input type="text" asp-for="@Model.Ticket.EMail" />
-        <span asp-validation-for="@Model.Ticket.EMail" class="text-danger"></span>
-        <label asp-for="@Model.Ticket.PhoneNumber">PhoneNumber</label>
-        <input type="text" asp-for="@Model.Ticket.PhoneNumber" />
-        <span asp-validation-for="@Model.Ticket.PhoneNumber" class="text-danger"></span>
-        <input hidden type="number" asp-for="@Model.Ticket.SaloonNr" value="@Model.ChosenSaloon.SaloonNr" />
-        <input hidden type="datetime" asp-for="@Model.Ticket.MovieStart" value="@Model.ThisSchedule.ViewsId" />
-        <input hidden type="text" asp-for="@Model.Ticket.MovieTitle" value="@Model.ChosenMovie.Title" />
+        <div>
+            <label style="color: white;" asp-for="@Model.Ticket.EMail">EMail</label>
+            <input type="text" asp-for="@Model.Ticket.EMail" />
+            <span style="color:white;" asp-validation-for="@Model.Ticket.EMail"></span>
+        </div>
+
+        <div>
+            <label style="color: white;" asp-for="@Model.Ticket.PhoneNumber">PhoneNumber</label>
+            <input type="text" asp-for="@Model.Ticket.PhoneNumber" />
+            <span style="color:white;" asp-validation-for="@Model.Ticket.PhoneNumber"></span>
+        </div>
 
 
 
+        <input hidden type="number" asp-for="@Model.Ticket.SaloonNr" value="@Model.SaloonNr" />
+        <input hidden type="datetime" asp-for="@Model.Ticket.MovieStart" value="@Model.ViewStart" />
+        <input hidden type="text" asp-for="@Model.Ticket.MovieTitle" value="@Model.MovieTitle" />
+        <input hidden type="text" asp-for="@Model.Ticket.PurchasedTime" value="@DateTime.Now" />
 
 
-        <input type="checkbox" />
 
-        <button class="btn btn-primary" type="submit">Jag har INTE varit en dålig människa</button>
+        <div>
+            <label style="color: white;">Good Human?</label>
+            <input class="m-5" type="checkbox" id="humanGarbage" onclick="CheckGarbage()" />
+        </div>
+
+        <div>
+            <p style="color: white;">
+                Totalt: @Model.Price
+                
+            </p>
+        </div>
+        <div>
+            <p style="color: white;">
+                Per Biljett: @((Model.Price/100)/(@Model.Price/100)*100) @*Ja jag var väldigt slö, priset blir rätt dock*@
+                
+            </p>
+        </div>
+
+        <div>
+            <button class="btn btn-primary" type="submit">Beställ</button>
+        </div>
+
     </form>
 
 
 </div>
+<script>
+    function CheckGarbage(){
+        alert("Genom att klicka på denna knapp har du nu garanterat att du har/kommer swisha(t) en rimlig summa till ovanstående nummer!")
+    }
+</script>
+@section Scripts{
+    @{
+        <partial name="_ValidationScriptsPartial"/>
+    }
+}

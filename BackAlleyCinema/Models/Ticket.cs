@@ -1,9 +1,9 @@
-﻿using BackAlleyCinema.Interfaces;
+﻿
 using System.ComponentModel.DataAnnotations;
 
 namespace BackAlleyCinema.Models
 {
-    public class Ticket : ITicket
+    public class Ticket 
     {
         public int Id { get; set; }
         [Required]
@@ -17,12 +17,16 @@ namespace BackAlleyCinema.Models
         public DateTime PurchasedTime { get; set; }
         [Required]
         public DateTime MovieStart { get; set; }
-
+        [Required]
+        
         public string MovieTitle { get; set; }
-
+        [Required]
         public int Seat { get; set; }
 
-
+        [Required]
         public int SaloonNr { get; set; }
+
+
+      
     }
 }

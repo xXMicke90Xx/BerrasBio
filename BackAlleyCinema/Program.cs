@@ -1,5 +1,5 @@
 using BackAlleyCinema.DataBaseAccess;
-using BackAlleyCinema.Interfaces;
+
 using BackAlleyCinema.Models;
 using BackAlleyCinema.Services;
 using Microsoft.EntityFrameworkCore;
@@ -28,12 +28,13 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 });
 
 //använda scoped i ställer?
-builder.Services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
+
 builder.Services.AddDbContext<CinemaDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<CinemaDbContext>();
 builder.Services.AddScoped<MovieSorter>();
 builder.Services.AddScoped<AddObjects>();
+builder.Services.AddScoped<ClearoldTickets>();
 builder.Services.AddTransient<Saloon>();
 
 

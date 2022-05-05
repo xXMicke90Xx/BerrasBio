@@ -19,24 +19,32 @@
     .linkButton {
         color: white;
     }
+
+    #TitlePicture {
+        height: 600px;
+        background-repeat: no-repeat;
+        background-size: auto 100%;
+        background-position: center;
+        padding: 0px;
+    }
 </style>
-<div class="px-0 pt-5 d-flex justify-content-center align-items-center" style="height: 600px; background-repeat: no-repeat; background-size:auto 100%; background-position:center; padding: 0px; background-image: url('@Model.ChosenMovie.ImageTo64')">
+<div id="TitlePicture" class="px-0 pt-5 d-flex justify-content-center align-items-center" style="background-image: url('@Model.ChosenMovie.ImageTo64')">
     @{
         var currentMovie = new Dictionary<string, string>() { { "MovieUrl", @Model.ChosenMovie.TrailerUrl } };
 
     }
     <a target="_blank" asp-all-route-data="currentMovie" asp-page="/Trailers/Index">
-        <img src="~/images/Play.jpg" style="height: 40px; width: 40px;" />
+        <img src="~/images/Play.png" style="height: 60px; width: 60px; background-color: transparent;" />
     </a>
 
 </div>
 
-<div class="container justify-content-between  ">
+<div class="container justify-content-between mt-3 ">
     <div class="row mx-auto">
         <div class="col-3"></div>
         <div class="col-6 text-center">
             <h2 style="color: ghostwhite">Description</h2>
-            <p>@Model.ChosenMovie.Description</p>
+            <p style="color:white;">@Model.ChosenMovie.Description</p>
         </div>
         <div class="col-3"></div>
     </div>
@@ -83,10 +91,9 @@
                             </a>
                         </td>
                         <td style=\"justify-content: center">
-                            <a class="linkButton" asp-all-route-data="data" asp-page="../Cinema/Index" style="border: none; text-decoration: none; display: block; margin:auto" type="submit">
-                                @(Model.Saloons[@view.SaloonId-1].MaxSeats-@view.TicketsSold)
-                            </a>
+                            <a class="linkButton" asp-all-route-data="data" asp-page="../Cinema/Index" style="border: none; text-decoration: none; display: block; margin:auto" type="submit">@Model.Seats[count]</a>@*Fulhacket, detta är inte den optimala lösningen men sorteringen vägrar funka på denna kolumn annars! Han ränkar denna efter html längden, vilket är skitskumt!*@
                         </td>
+
                     </tr>
                     count++;
                 }
@@ -117,10 +124,9 @@
 
 <script>
 
-  
-
     function sortTable(n) {
-      var table, rows, switching, i, x, y, z, shouldSwitch, dir, switchcount = 0;
+      var table, rows, switching, i, z, shouldSwitch, dir, switchcount = 0;
+      let x,y;
       table = document.getElementById("tableBody");
       switching = true;
 
@@ -138,15 +144,30 @@
           x = rows[i].getElementsByTagName("a")[n];
           y = rows[i + 1].getElementsByTagName("a")[n];
 
-          
+
           if (dir == "asc") {
-            if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+              if (n > 1){
+                if (parseInt(x.innerHTML.trim().toLowerCase()) > parseInt(y.innerHTML.trim().toLowerCase())) {
+
+              shouldSwitch= true;
+              break;
+                }
+              }
+            else if (x.innerHTML.trim().toLowerCase() > y.innerHTML.trim().toLowerCase()) {
 
               shouldSwitch= true;
               break;
             }
           } else if (dir == "desc") {
-            if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+              if (n > 1){
+                if (parseInt(x.innerHTML.trim().toLowerCase()) < parseInt(y.innerHTML.trim().toLowerCase())) {
+
+              shouldSwitch= true;
+              break;
+                }
+              }
+
+            else if (x.innerHTML.trim().toLowerCase() < y.innerHTML.trim().toLowerCase()) {
 
               shouldSwitch = true;
               break;
@@ -168,7 +189,7 @@
         }
       }
     }
-    
+
 </script>
 
 

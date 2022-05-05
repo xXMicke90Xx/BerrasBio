@@ -13,7 +13,7 @@ namespace BackAlleyCinema.Pages
     public class IndexModel : PageModel
     {
         
-
+        ClearoldTickets ClearoldTickets { get; set; }
         private CinemaDbContext _context { get; set; }
 
         private static MovieSorter _sorter { get; set; }
@@ -32,27 +32,33 @@ namespace BackAlleyCinema.Pages
         }
         
 
-        public void OnGetAsync()
+        public async Task OnGetAsync()
         {
             
             if (_context != null && _context.Movies.Count() > 0)
             {
                 movies = _context.Movies.ToList();
+
+                if (_context.Tickets.Count() > 0)
+                {
+                    ClearoldTickets = new ClearoldTickets(_context);
+                    await ClearoldTickets.VoidTickets();
+                }
             }
             else
             {
                 try
                 {
                    
-                    addObjects.FillDataBaseWithMovies();
+                    await addObjects.FillDataBaseWithMovies();
                    
                     
-                    movies = _sorter.SortByLatestRelease();
+                    movies = _context.Movies.ToList();
                     Redirect("Index");
                 }
-                catch
+                catch (Exception ex)
                 {
-                    Redirect("/Error");
+                    RedirectToPage("/Error", new {ex = ex});
                 }
             }
             
