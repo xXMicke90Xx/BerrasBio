@@ -22,7 +22,7 @@ namespace BackAlleyCinema.Services
                     Body = $"Här är en biljett för att se {movieTitle}! \n" +
                     $"Sätena är {seatsTaken.Substring(0, seatsTaken.Length - 1)} \n" +
                     $"Salongen är {saloonId} \n" +
-                    $"Tiden är {movieStart}\n" +
+                    $"Tiden är {TimeOnly.FromDateTime(DateTime.Parse(movieStart))}\n" +
                     $"Välkomna!\n",
                     Subject = "Biljetter",
                     From = new MailAddress("BerraBio@hotmail.com"),

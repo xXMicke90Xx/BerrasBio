@@ -40,7 +40,7 @@ namespace BackAlleyCinema.Pages.MoviePages
             return RedirectToPage("../Cinema/Index");
         }
 
-        private void AvailableSeats() //Fulhack, denna är illa tvungen då HTML koden genererad annars inte skulle sortera rätt, väldigt skumt
+        private void AvailableSeats() 
         {
             foreach (var view in schedules)
             {
