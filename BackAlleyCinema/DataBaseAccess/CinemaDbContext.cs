@@ -17,19 +17,17 @@ namespace BackAlleyCinema.DataBaseAccess
 
 
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder Addobjects)
         {
             //Kompositnyckel
-            modelBuilder.Entity<Schedule>()
+            Addobjects.Entity<Schedule>()
                 .HasKey(t => new { t.MovieId, t.SaloonId, t.ViewsId });
 
             //Relationer
-            modelBuilder.Entity<Schedule>()
+            Addobjects.Entity<Schedule>()
                 .HasOne(b => b.Movies)
                 .WithMany(st => st.Schedules)
-                .HasForeignKey(b => b.MovieId);
-
-            
+                .HasForeignKey(b => b.MovieId);         
                 
         }
     }
