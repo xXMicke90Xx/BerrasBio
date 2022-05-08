@@ -13,7 +13,7 @@ namespace BackAlleyCinema.Services
                 smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
                 smtp.UseDefaultCredentials = false;
                 smtp.EnableSsl = true;
-                smtp.Credentials = new System.Net.NetworkCredential("BerraBio@hotmail.com", "HackMe123", "smtp-mail.outlook.com");
+                smtp.Credentials = new System.Net.NetworkCredential("Micke.Handledning@hotmail.com", "M1ke1sthebest2", "smtp-mail.outlook.com");
 
 
                 var msg = new MailMessage
@@ -25,7 +25,7 @@ namespace BackAlleyCinema.Services
                     $"Tiden är {TimeOnly.FromDateTime(DateTime.Parse(movieStart))}\n" +
                     $"Välkomna!\n",
                     Subject = "Biljetter",
-                    From = new MailAddress("BerraBio@hotmail.com"),
+                    From = new MailAddress("Micke.Handledning@hotmail.com"),
 
                 };
                 msg.To.Add(mailAddress);

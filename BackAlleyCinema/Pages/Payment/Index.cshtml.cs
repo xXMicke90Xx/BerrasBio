@@ -78,19 +78,24 @@ namespace BackAlleyCinema.Pages.Payment
 
             if (ModelState.IsValid == true)
             {
-                await MailService.MailSender(Ticket.EMail, Ticket.MovieTitle, seatsTaken, Ticket.SaloonNr, Ticket.MovieStart.ToString());
+                try //Tyvärr buggig då authentication inte alltid vill. 
+                {
+                    await MailService.MailSender(Ticket.EMail, Ticket.MovieTitle, seatsTaken, Ticket.SaloonNr, Ticket.MovieStart.ToString());
+                }
+                finally
+                {
 
 
 
-                thisSchedule.TakenSeats += seatsTaken;
-                thisSchedule.TicketsSold += tickets.Count();
+                    thisSchedule.TakenSeats += seatsTaken;
+                    thisSchedule.TicketsSold += tickets.Count();
 
-                await _context.Tickets.AddRangeAsync(tickets);
-                _context.Schedules.Update(thisSchedule);
-                await _context.SaveChangesAsync();
-              
-
-                return RedirectToPage("../EndPage/Index", new { id = thisSchedule.MovieId });
+                    await _context.Tickets.AddRangeAsync(tickets);
+                    _context.Schedules.Update(thisSchedule);
+                    await _context.SaveChangesAsync();
+                }
+                    return RedirectToPage("../EndPage/Index", new { id = thisSchedule.MovieId });
+                
             }
             else
             {
